@@ -1,0 +1,27 @@
+package main
+
+import (
+	"fmt"
+)
+
+type command struct {
+	Name string
+	Args []string
+}
+
+type commands struct {
+	registeredCommands map[string]func(*state, command) error
+}
+
+func (c *commands) run(s *state, cmd command) error {
+	if handler, ok := c.registeredCommands[cmd.Name]; ok {
+		return handler(s, cmd)
+	}
+	return fmt.Errorf("unknown command: %s", cmd.Name)
+
+}
+
+func (c *commands) register(name string, f func(*state, command) error) {
+	c.registeredCommands[name] = f
+
+}
